@@ -14,8 +14,8 @@ def test_deserialize_grid():
 
 def test_is_valid_grid():
     valid_grid = [[0, 1], [2, 3]]
-    invalid_size_grid = [[1] * 35] # initial commit
-    invalid_color_grid = [[10, 1]] # Invalid color (ARC colors are 0-9)
+    invalid_size_grid = [[1] * 35] 
+    invalid_color_grid = [[10, 1]] 
 
     assert is_valid_grid(valid_grid) is True
     assert is_valid_grid(invalid_size_grid) is False

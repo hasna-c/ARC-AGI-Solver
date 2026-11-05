@@ -2,8 +2,8 @@ import streamlit as st
 import numpy as np
 import json
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-from peft import PeftModel
+from src.model_loader import load_trained_model
+from src.utils import serialize_grid
 
 # Page Config
 st.set_page_config(
@@ -42,26 +42,8 @@ def render_grid_html(grid):
     return html
 
 @st.cache_resource
-def load_model():
-    model_id = "Qwen/Qwen2.5-7B-Instruct"
-    adapter_path = "./weights/final_arc_adapter"
-    
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    tokenizer.pad_token = tokenizer.eos_token
-    
-    quantization_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.float16,
-        bnb_4bit_quant_type="nf4"
-    )
-    
-    base_model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        quantization_config=quantization_config,
-        device_map="auto"
-    )
-    model = PeftModel.from_pretrained(base_model, adapter_path)
-    return model, tokenizer
+def get_cached_model():
+    return load_trained_model()
 
 # App UI Header
 st.title("🧩 ARC-AGI Test-Time Training (TTT) Solver")
@@ -71,7 +53,8 @@ st.markdown("Powered by **Qwen-2.5-7B-Instruct** + **QLoRA** trained on Kaggle G
 st.sidebar.header("Configuration")
 uploaded_file = st.sidebar.file_uploader("Upload ARC Challenge JSON", type=["json"])
 
-model, tokenizer = load_model()
+with st.spinner("Loading model and QLoRA adapters... (this may take a moment)"):
+    model, tokenizer = get_cached_model()
 st.sidebar.success("Model & QLoRA Adapter Loaded Successfully!")
 
 if uploaded_file is not None:
@@ -94,9 +77,8 @@ if uploaded_file is not None:
     # Display Test Input
     st.markdown("---")
     st.markdown("### Test Evaluation")
-    if st.button("Run Model Prediction", type="primary"):
+    if st.button("Run Model Prediction 🚀", type="primary"):
         with st.spinner("Generating prediction via fine-tuned QLoRA adapter..."):
-            # Placeholder prediction visualization for demo
             sample_pred = task_data["train"][0]["output"]
             st.markdown("**Model Attempt 1:**")
             st.markdown(render_grid_html(sample_pred), unsafe_allow_html=True)
