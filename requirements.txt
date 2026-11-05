@@ -1,0 +1,8 @@
+torch>=2.5.0
+transformers>=4.49.0
+peft>=0.21.2
+bitsandbytes>=0.45.0
+accelerate>=0.30.0
+numpy>=2.0.0
+streamlit>=1.35.0
+pandas>=2.0.0
