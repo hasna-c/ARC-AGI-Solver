@@ -6,12 +6,11 @@ MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 ADAPTER_PATH = "./weights/final_arc_adapter"
 
 def load_trained_model():
-    """Loads base model in 4-bit and attaches your downloaded Kaggle QLoRA weights."""
-    print("Loading tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
+    print("Loading tokenizer from local cache...")
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, local_files_only=True)
     tokenizer.pad_token = tokenizer.eos_token
 
-    print("Loading base model in 4-bit...")
+    print("Loading base model from local cache in 4-bit...")
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_compute_dtype=torch.float16,
@@ -21,7 +20,8 @@ def load_trained_model():
     base_model = AutoModelForCausalLM.from_pretrained(
         MODEL_ID,
         quantization_config=quantization_config,
-        device_map="auto"
+        device_map="auto",
+        local_files_only=True  # <--- Forces it to use already cached files instantly
     )
 
     print(f"Attaching fine-tuned LoRA weights from {ADAPTER_PATH}...")
@@ -31,4 +31,4 @@ def load_trained_model():
 
 if __name__ == "__main__":
     model, tokenizer = load_trained_model()
-    print("Model and adapters loaded successfully in VS Code workspace!")
+    print("Model and adapters loaded successfully from local cache!")
