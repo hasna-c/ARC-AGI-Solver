@@ -12,6 +12,14 @@ def test_deserialize_grid():
     expected = [[1, 2], [3, 4]]
     assert deserialize_grid(text_str) == expected
 
+def test_deserialize_grid_extracts_answer_after_prompt():
+    text_str = "Example output:\n8 8\n8 8\n### Predicted Output Grid:\n[[1, 2], [3, 4]]"
+    assert deserialize_grid(text_str) == [[1, 2], [3, 4]]
+
+def test_deserialize_grid_ignores_invalid_and_non_grid_text():
+    assert deserialize_grid("No grid was generated.") == []
+    assert deserialize_grid("1 2\n3 10") == []
+
 def test_is_valid_grid():
     valid_grid = [[0, 1], [2, 3]]
     invalid_size_grid = [[1] * 35] 
