@@ -51,14 +51,7 @@ arc_agi_solver/
 ├── .gitignore
 └── README.md
 ```
-
-## Requirements
-
-- Python 3.10+
-- pip / virtual environment
-- CUDA-capable GPU recommended for model inference
-- Internet access for model and dependency downloads (if needed)
-
+  
 ## Getting Started
 
 ### 1. Clone the repository
